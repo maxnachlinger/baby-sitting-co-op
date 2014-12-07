@@ -29,6 +29,7 @@ function run() {
 	var transactions = [];
 	var stats = [];
 
+	console.log("Reading transactions file");
 	async.series([
 		function (sCb) {
 			readTransactions({
@@ -36,29 +37,18 @@ function run() {
 			}, function (err, res) {
 				if (err) err = new VError(err);
 				transactions = res;
+				console.log("(%d) transactons found.", transactions.length);
 				sCb(err);
 			})
 		},
 		function (sCb) {
+			console.log("Inserting transactions into db.");
 			transactionsLevel.batch(_.map(transactions, function (o) {
 				return {type: 'put', key: o._id, value: o};
 			}), sCb);
 		},
 		function (sCb) {
-			generateStats({
-				transactions: transactions
-			}, function (err, res) {
-				if (err) err = new VError(err);
-				stats = res;
-				sCb(err);
-			});
-		},
-		function (sCb) {
-			statsLevel.batch(_.map(stats, function (o) {
-				return {type: 'put', key: o._id, value: o};
-			}), sCb);
-		},
-		function (sCb) {
+			console.log("Verifying inserted transactions.");
 			verifyData({
 				sub: transactionsLevel,
 				keyPrefix: '!transaction',
@@ -66,6 +56,24 @@ function run() {
 			}, sCb);
 		},
 		function (sCb) {
+			console.log("Generating stats.");
+			generateStats({
+				transactions: transactions
+			}, function (err, res) {
+				if (err) err = new VError(err);
+				stats = res;
+				console.log("Stats for (%d) sitters generated.", stats.length);
+				sCb(err);
+			});
+		},
+		function (sCb) {
+			console.log("Inserting stats into db.");
+			statsLevel.batch(_.map(stats, function (o) {
+				return {type: 'put', key: o._id, value: o};
+			}), sCb);
+		},
+		function (sCb) {
+			console.log("Verifying inserted stats.");
 			verifyData({
 				sub: statsLevel,
 				keyPrefix: '!stat',
@@ -74,9 +82,10 @@ function run() {
 		}
 	], function (err) {
 		if (err) {
-			console.error(err && err.stack);
+			console.error("Errored: %j", err && err.stack);
 			return process.exit(1);
 		}
+		console.log("Done.");
 		process.exit(0);
 	});
 }
@@ -93,7 +102,10 @@ function verifyData(params, cb) {
 		})
 		.on('error', cb)
 		.on('end', function () {
-			if (amtExpected === amtFound) return cb();
+			if (amtExpected === amtFound) {
+				console.log("Verified, (%d) records found, (%d) expected.", amtFound, amtExpected);
+				return cb();
+			}
 			return cb(new VError("Expected (" + amtExpected + ") " + keyPrefix + " items to be stored, but only retrieved ("
 			+ amtFound + ")"));
 		});

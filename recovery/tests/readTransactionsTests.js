@@ -1,7 +1,7 @@
 var test = require('tape');
 var fs = require('fs');
 var path = require('path');
-var readTransactions = require('../../recovery/readTransactions');
+var readTransactions = require('../readTransactions');
 
 test('Transforms transactions.xml document into an array of objects', function (t) {
 	readTransactions({

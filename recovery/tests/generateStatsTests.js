@@ -1,7 +1,7 @@
 var test = require('tape');
 var fs = require('fs');
 var path = require('path');
-var generateStats = require('../../recovery/generateStats');
+var generateStats = require('../generateStats');
 
 test('Calculates the total amount of points for each baby sitter.', function (t) {
 	// ids 0 and 1 start with 5 points
