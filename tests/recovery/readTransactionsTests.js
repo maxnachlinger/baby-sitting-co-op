@@ -10,7 +10,7 @@ test('Transforms transactions.xml document into an array of objects', function (
 		t.notOk(err, 'No error should be returned, received: ' + (err && err.stack));
 		t.deepEqual(transactions, [
 			{
-				id: '!transaction0',
+				_id: '!transaction0',
 				childrenWatched: 3,
 				duration: 2,
 				sittingProviderId: '0',
@@ -18,7 +18,7 @@ test('Transforms transactions.xml document into an array of objects', function (
 				startedAt: 1411376036954
 			},
 			{
-				id: '!transaction1',
+				_id: '!transaction1',
 				childrenWatched: 2,
 				duration: 1,
 				sittingProviderId: '0',

@@ -7,7 +7,7 @@ test('Calculates the total amount of points for each baby sitter.', function (t)
 	// ids 0 and 1 start with 5 points
 	var transactions = [
 		{
-			id: 'transaction1',
+			_id: 'transaction1',
 			childrenWatched: 3,
 			duration: 2,
 			sittingProviderId: '0',
@@ -17,7 +17,7 @@ test('Calculates the total amount of points for each baby sitter.', function (t)
 			// id: 1  5 - 6 = -1 point
 		},
 		{
-			id: 'transaction2',
+			_id: 'transaction2',
 			childrenWatched: 2,
 			duration: 1,
 			sittingProviderId: '0',
@@ -27,7 +27,7 @@ test('Calculates the total amount of points for each baby sitter.', function (t)
 			// id: 1  -1 + -2 points = -3 point
 		},
 		{
-			id: 'transaction3',
+			_id: 'transaction3',
 			childrenWatched: 1,
 			duration: 5,
 			sittingProviderId: '1',
@@ -40,7 +40,38 @@ test('Calculates the total amount of points for each baby sitter.', function (t)
 
 	generateStats({transactions: transactions}, function (err, result) {
 		t.notOk(err, 'No error should be returned, received: ' + (err && err.stack));
-		console.log(result);
+		t.deepEqual(result, [
+			{
+				points: 13,
+				totalChildrenWatched: 5,
+				receiversSatFor: {'1': 2},
+				amtReceiversSatFor: 1,
+				maxConcurrentChildrenWatched: 3,
+				maxDurationChildrenWatched: 2,
+				sitterId: '0',
+				_id: '!stat0'
+			},
+			{
+				points: 2,
+				totalChildrenWatched: 1,
+				receiversSatFor: {'2': 1},
+				amtReceiversSatFor: 1,
+				maxConcurrentChildrenWatched: 1,
+				maxDurationChildrenWatched: 5,
+				sitterId: '1',
+				_id: '!stat1'
+			},
+			{
+				points: 0,
+				totalChildrenWatched: 0,
+				receiversSatFor: {},
+				amtReceiversSatFor: 0,
+				maxConcurrentChildrenWatched: 0,
+				maxDurationChildrenWatched: 0,
+				sitterId: '2',
+				_id: '!stat2'
+			}
+		]);
 		t.end();
 	});
 });

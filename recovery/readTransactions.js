@@ -22,7 +22,7 @@ module.exports = function (params, cb) {
 			var i = -1;
 			var result = _(result.ArrayOfBabySittingTransaction.BabySittingTransaction).map(function (row) {
 				return {
-					id: '!transaction' + (++i),
+					_id: '!transaction' + (++i),
 					childrenWatched: parseInt(row.ChildrenWatched.shift()),
 					duration: parseInt(row.Duration.shift().replace(/\D/g, '')),
 					sittingProviderId: row.SittingProviderId.shift(),

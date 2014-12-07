@@ -54,7 +54,8 @@ module.exports = function (params, cb) {
 	});
 
 	cb(null, _.map(totals, function(stats, id) {
-		stats.id = '!stat' + id;
+		stats.sitterId = id;
+		stats._id = '!stat' + id;
 		return stats;
 	}));
 };

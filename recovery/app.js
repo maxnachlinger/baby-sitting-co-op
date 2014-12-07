@@ -41,7 +41,7 @@ function run() {
 		},
 		function (sCb) {
 			transactionsLevel.batch(_.map(transactions, function (o) {
-				return {type: 'put', key: o.id, value: o};
+				return {type: 'put', key: o._id, value: o};
 			}), sCb);
 		},
 		function (sCb) {
@@ -55,7 +55,7 @@ function run() {
 		},
 		function (sCb) {
 			statsLevel.batch(_.map(stats, function (o) {
-				return {type: 'put', key: o.id, value: o};
+				return {type: 'put', key: o._id, value: o};
 			}), sCb);
 		},
 		function (sCb) {
