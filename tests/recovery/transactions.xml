@@ -1,0 +1,22 @@
+<ArrayOfBabySittingTransaction xmlns="http://schemas.datacontract.org/2004/07/CliqueDetector" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <BabySittingTransaction>
+    <ChildrenWatched>3</ChildrenWatched>
+    <Duration>PT2H</Duration>
+    <SittingProviderId>0</SittingProviderId>
+    <SittingReceiverId>1</SittingReceiverId>
+    <StartedAtUtc xmlns:a="http://schemas.datacontract.org/2004/07/System">
+      <a:DateTime>2014-09-22T08:53:56.9541267Z</a:DateTime>
+      <a:OffsetMinutes>-420</a:OffsetMinutes>
+    </StartedAtUtc>
+  </BabySittingTransaction>
+  <BabySittingTransaction>
+    <ChildrenWatched>2</ChildrenWatched>
+    <Duration>PT1H</Duration>
+    <SittingProviderId>0</SittingProviderId>
+    <SittingReceiverId>2</SittingReceiverId>
+    <StartedAtUtc xmlns:a="http://schemas.datacontract.org/2004/07/System">
+      <a:DateTime>2014-10-12T06:49:48.3931284Z</a:DateTime>
+      <a:OffsetMinutes>-420</a:OffsetMinutes>
+    </StartedAtUtc>
+  </BabySittingTransaction>
+</ArrayOfBabySittingTransaction>
