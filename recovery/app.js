@@ -8,7 +8,7 @@ var config = require('../config');
 var readTransactions = require('./readTransactions');
 var generateStats = require('./generateStats');
 var domain = require('domain');
-var sublevel = require('level-sublevel')
+var sublevel = require('level-sublevel');
 
 var serverDomain = domain.create();
 serverDomain.on('error', function (err) {

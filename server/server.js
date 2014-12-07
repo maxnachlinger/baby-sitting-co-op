@@ -28,6 +28,12 @@ server.route({
 	}
 });
 
+server.route({
+	method: 'GET',
+	path: '/stat',
+	handler: require('./handlers/stats')
+});
+
 server.pack.register({
 	plugin: Good,
 	options: {
@@ -38,6 +44,7 @@ server.pack.register({
 	}
 }, function (err) {
 	if (err) throw err; // something bad happened loading the plugin
+
 	server.start(function () {
 		server.log('info', 'Server running at: ' + server.info.uri);
 	});
