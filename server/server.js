@@ -1,25 +1,44 @@
 "use strict";
 var net = require('net');
-var multilevel = require('multilevel');
-var level = require('level');
-var sublevel = require('level-sublevel');
-var VError = require('verror');
+var path = require('path');
+var Hapi = require('hapi');
+var Good = require('good');
+var Joi = require('joi');
+
 var config = require('../config');
 
-module.exports = function() {
-	var db = sublevel(level(config.dbPath, {
-		createIfMissing: true,
-		errorIfExists: false,
-		valueEncoding: 'json'
-	}));
-	var transactionsLevel = db.sublevel(config.subLevels.transactions);
-	var statsLevel = db.sublevel(config.subLevels.stats);
+var server = new Hapi.Server('0.0.0.0', process.env.port || 8080, {
+	cors: true,
+	validation: {
+		abortEarly: false,
+		allowUnknown: true
+	}
+});
 
-	net.createServer(function (con) {
-		con.pipe(multilevel.server(db)).pipe(con);
-	}).listen(config.levelPort, function (err) {
-		if (err) throw new VError(err);
+server.route({
+	method: 'GET',
+	path: '/{static*}',
+	handler: {
+		directory: {
+			path: path.join(__dirname, '/public'),
+			lookupCompressed: true,
+			listing: false,
+			index: true
+		}
+	}
+});
 
-		// setup all the things here
+server.pack.register({
+	plugin: Good,
+	options: {
+		reporters: [{
+			reporter: require('good-console'),
+			args: [{log: '*', request: '*'}]
+		}]
+	}
+}, function (err) {
+	if (err) throw err; // something bad happened loading the plugin
+	server.start(function () {
+		server.log('info', 'Server running at: ' + server.info.uri);
 	});
-};
+});
