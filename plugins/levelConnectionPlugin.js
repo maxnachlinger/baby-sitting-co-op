@@ -1,4 +1,3 @@
-var util = require('util');
 var path = require('path');
 var net = require('net');
 var multilevel = require('multilevel');

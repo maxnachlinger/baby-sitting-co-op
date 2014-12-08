@@ -15,8 +15,12 @@ module.exports = function (request, reply) {
 
 				return reply(err)
 			}
-			if(facet)
+			if(facet) {
+				if(_.isUndefined(value[facet]))
+					return reply(Boom.notFound());
+
 				reply(value[facet]);
+			}
 
 			reply(value);
 		});

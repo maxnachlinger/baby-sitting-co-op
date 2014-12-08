@@ -5,8 +5,7 @@ module.exports = {
 	subLevels: {
 		transactions: 'transactions',
 		members: 'members',
-		productiveMembers: 'productiveMembers',
-		recommendedSitters: 'recommendedSitters'
+		productiveMembers: 'productiveMembers'
 	},
 	levelOptions: {
 		createIfMissing: true,
