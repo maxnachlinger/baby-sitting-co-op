@@ -23,3 +23,10 @@ npm start
 [All member-ids and their co-op points: /member/points](http://localhost:8080/member/points)
 
 [All member-ids and their productivity-rankings (ordered by productivity-Ranking DESC): /member/productivityRanking](http://localhost:8080/member/productivityRanking)
+
+### Productivity and recommendation-logic
+Sitter points: (this one was given) - Total amount of children sat * duration
+
+Sitter productivity: Points (see above) + Total amount of unique parents sat for + (-10% per 30 days since sitter last sat)
+
+Parent sitter recommendation: Sitter productivity (see above) + 2 points per each time the sitter has sat for the parent in question
