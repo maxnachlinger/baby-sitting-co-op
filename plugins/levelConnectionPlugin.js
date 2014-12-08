@@ -30,7 +30,9 @@ _plugin.register = function (server, options, next) {
 	}
 
 	multilevel.writeManifest(db, settings.manifestPath);
+	var manifest = require(settings.manifestPath);
 
+	// start up the db server
 	net.createServer(function (con) {
 		_plugin.serverSocket = con;
 		_plugin.serverSocket.pipe(multilevel.server(db)).pipe(_plugin.serverSocket);
@@ -38,31 +40,31 @@ _plugin.register = function (server, options, next) {
 		if (err) return next(err);
 
 		server.ext('onPreHandler', function (request, extNext) {
+
 			request.getLevelConnection = function (cb) {
-				var client = multilevel.client(require(settings.manifestPath));
+				var client = multilevel.client(manifest);
 				var clientSocket = net.createConnection(settings.levelPort);
 				clientSocket.pipe(client.createRpcStream()).pipe(clientSocket);
 
-				request.levelConnection = {
+				request._levelConnection = {
 					client: client,
-					clientSocket: clientSocket
+					clientSocket: clientSocket,
+					close: function () {
+						if (!request._levelConnection) return;
+
+						request._levelConnection.clientSocket.end();
+						request._levelConnection.client.close();
+					}
 				};
-
-				cb(null, request.levelConnection.client);
+				cb(null, request._levelConnection.client);
 			};
 
-			request.closeLevelConnection = function () {
-				if (!request.levelConnection) return;
-
-				request.levelConnection.clientSocket.destroy();
-				request.levelConnection.client.close();
-			};
 			extNext();
 		});
 
 		server.events.on('response', function (request) {
-			if(request.closeLevelConnection)
-				request.closeLevelConnection();
+			if(request._levelConnection)
+				request._levelConnection.close();
 		});
 
 		next();
