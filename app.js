@@ -50,7 +50,7 @@ server.route({
 		validate: {
 			params: {
 				memberId: Joi.string().required(),
-				facet: Joi.string().required().allow(['points','sittersUsed','totalUniqueSittersUsed','parentsSatFor',
+				facet: Joi.string().required().valid(['points','sittersUsed','totalUniqueSittersUsed','parentsSatFor',
 					'totalUniqueParentsSatFor', 'lastSat','productivityRanking','recommendedSitters'])
 			}
 		},

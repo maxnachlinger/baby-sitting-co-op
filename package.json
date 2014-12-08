@@ -4,7 +4,7 @@
 	"description": "Service code for a simple baby-sitting co-op app",
 	"main": "app.js",
 	"scripts": {
-		"test": "tape ./tests/recovery/*.js",
+		"test": "tape ./tests/*.js",
 		"recover": "node recovery/app.js",
 		"start": "node app.js"
 	},

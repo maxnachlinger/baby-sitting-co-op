@@ -1,10 +1,10 @@
 var test = require('tape');
 var path = require('path');
-var readTransactions = require('../../recovery/readTransactions');
+var readTransactions = require('../recovery/readTransactions');
 
 test('Transforms transactions.xml document into an array of objects', function (t) {
 	readTransactions({
-		transactionsPath: path.normalize(path.join(__dirname, '/transactions.xml'))
+		transactionsPath: path.normalize(path.join(__dirname, '/fixtures/transactions.xml'))
 	}, function (err, transactions) {
 		t.notOk(err, 'No error should be returned, received: ' + (err && err.stack));
 		t.deepEqual(transactions, [
