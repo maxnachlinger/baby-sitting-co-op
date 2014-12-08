@@ -8,6 +8,11 @@ module.exports = {
 		productiveMembers: 'productiveMembers',
 		recommendedSitters: 'recommendedSitters'
 	},
+	levelOptions: {
+		createIfMissing: true,
+		errorIfExists: false,
+		valueEncoding: 'json'
+	},
 	levelPort: 3000,
 	serverPort: 8080
 };

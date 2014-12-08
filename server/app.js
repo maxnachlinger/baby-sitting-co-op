@@ -1,39 +1,84 @@
 "use strict";
 var path = require('path');
-var net = require('net');
-var domain = require('domain');
+var Hapi = require('hapi');
+var Good = require('good');
+var Joi = require('joi');
 var _ = require('lodash');
-var multilevel = require('multilevel');
-var level = require('level');
-var sublevel = require('level-sublevel');
+
 var config = require('./common/config');
 
-var serverDomain = domain.create();
-
-serverDomain.on('error', function (err) {
-	console.error(err && err.stack);
-	process.exit(1);
+var server = new Hapi.Server('0.0.0.0', process.env.port || config.serverPort, {
+	cors: true,
+	validation: {
+		abortEarly: false,
+		allowUnknown: true
+	}
 });
 
-serverDomain.run(function() {
-	var db = sublevel(level(config.dbPath, {
-		createIfMissing: true,
-		errorIfExists: false,
-		valueEncoding: 'json'
-	}));
+server.route({
+	method: 'GET',
+	path: '/member',
+	handler: require('./handlers/members')
+});
+server.route({
+	method: 'GET',
+	path: '/member/points',
+	handler: require('./handlers/membersPoints')
+});
+server.route({
+	method: 'GET',
+	path: '/member/productivityRanking',
+	handler: require('./handlers/membersProductivity')
+});
+server.route({
+	method: 'GET',
+	path: '/member/{memberId}',
+	config: {
+		validate: {
+			params: {
+				memberId: Joi.string().required()
+			}
+		},
+		handler: require('./handlers/getMember')
+	}
+});
 
-	// setup sublevels
-	var sublevels = {};
-	_(config.subLevels).each(function(sublevelName) {
-		sublevels[sublevelName] = db.sublevel(sublevelName);
-	});
+server.route({
+	method: 'GET',
+	path: '/member/{memberId}/{facet}',
+	config: {
+		validate: {
+			params: {
+				memberId: Joi.string().required(),
+				facet: Joi.string().required().allow(['points','sittersUsed','totalUniqueSittersUsed','parentsSatFor',
+					'totalUniqueParentsSatFor', 'lastSat','productivityRanking','recommendedSitters'])
+			}
+		},
+		handler: require('./handlers/getMember')
+	}
+});
 
-	multilevel.writeManifest(db, path.join(__dirname, '/manifest.json'));
+server.pack.register([{
+	plugin: Good,
+	options: {
+		reporters: [{
+			reporter: require('good-console'),
+			args: [{log: '*', request: '*'}]
+		}]
+	}
+}, {
+	plugin: require('./plugins/levelConnectionPlugin'),
+	options: {
+		manifestPath: path.resolve('./manifest.json'),
+		dbPath: path.resolve('./db.level'),
+		levelOptions: config.levelOptions,
+		subLevels: _.values(config.subLevels),
+		levelPort: config.levelPort
+	}
+}], function (err) {
+	if (err) throw err; // something bad happened loading the plugin
 
-	net.createServer(function (con) {
-		con.pipe(multilevel.server(db)).pipe(con);
-	}).listen(config.levelPort, function (err) {
-		if (err) throw err;
-		require('./server');
+	server.start(function () {
+		server.log('info', 'Server running at: ' + server.info.uri);
 	});
 });

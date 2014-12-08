@@ -17,18 +17,13 @@ serverDomain.on('error', function (err) {
 });
 serverDomain.run(run);
 
-var db = sublevel(level(config.dbPath, {
-	createIfMissing: true,
-	errorIfExists: false,
-	valueEncoding: 'json'
-}));
+var db = sublevel(level(config.dbPath, config.levelOptions));
 
 // setup sublevels
 var sublevels = {};
 _(config.subLevels).each(function(sublevelName) {
 	sublevels[sublevelName] = db.sublevel(sublevelName);
 });
-
 
 function run() {
 	var transactions = [];
@@ -87,8 +82,10 @@ function run() {
 
 		function (sCb) {
 			console.log("Inserting productive members into db.");
-			sublevels.productiveMembers.batch(_.map(stats.productiveMembers, function (o) {
-				return {type: 'put', key: o.memberId, value: o};
+			// using the array idx as the key is important since we want to store the sorted
+			// array in it's original order. This is of course optimized for read
+			sublevels.productiveMembers.batch(_.map(stats.productiveMembers, function (o, i) {
+				return {type: 'put', key: i, value: o};
 			}), sCb);
 		},
 
@@ -97,21 +94,6 @@ function run() {
 			verifyData({
 				sub: sublevels.productiveMembers,
 				amtExpected: stats.productiveMembers.length
-			}, sCb);
-		},
-
-		function (sCb) {
-			console.log("Inserting sitter recommendations into db.");
-			sublevels.recommendedSitters.batch(_.map(stats.recommendedSitters, function (o) {
-				return {type: 'put', key: o.memberId, value: o};
-			}), sCb);
-		},
-
-		function (sCb) {
-			console.log("Verifying inserted sitter recommendations.");
-			verifyData({
-				sub: sublevels.recommendedSitters,
-				amtExpected: stats.recommendedSitters.length
 			}, sCb);
 		}
 	], function (err) {

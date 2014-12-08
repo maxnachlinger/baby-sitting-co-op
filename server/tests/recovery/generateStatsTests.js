@@ -55,8 +55,6 @@ test('Calculates the total amount of points for each baby sitter.', function (t)
 			_.pluck(result.productiveMembers, 'memberId'), expectedProductivity,
 			'Members ranked in order of productivity are: ' + expectedProductivity.join(', ')
 		);
-
-		console.log(result.recommendedSitters);
 		t.end();
 	});
 });

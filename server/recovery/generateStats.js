@@ -12,8 +12,7 @@ module.exports = function (params, cb) {
 
 	var stats = {
 		members: [],
-		productiveMembers: [],  // of {memberId: memberId, productivity: rank} ranked by productivity
-		recommendedSitters: [] // of {memberId: memberId, recommendedSitters: [memberIds ranked by productivity]}
+		productiveMembers: []  // of {memberId: memberId, productivity: rank} ranked by productivity
 	};
 
 	async.series([
@@ -130,7 +129,6 @@ module.exports = function (params, cb) {
 			return member;
 		});
 
-		stats.recommendedSitters = _.map(stats.members, _.partialRight(_.pick, 'memberId', 'recommendedSitters'));
 		cb();
 	}
 
