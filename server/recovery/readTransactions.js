@@ -21,12 +21,14 @@ module.exports = function (params, cb) {
 
 			var i = -1;
 			var result = _(result.ArrayOfBabySittingTransaction.BabySittingTransaction).map(function (row) {
+				// values come back as one-item arrays
+				// TODO - the code below ought to ensure each record has valid data, this should use _.reduce and only add data if the read data is valid
 				return {
-					_id: '!transaction' + (++i),
+					_id: ++i,
 					childrenWatched: parseInt(row.ChildrenWatched.shift()),
 					duration: parseInt(row.Duration.shift().replace(/\D/g, '')),
-					sittingProviderId: row.SittingProviderId.shift(),
-					sittingReceiverId: row.SittingReceiverId.shift(),
+					sitterId: row.SittingProviderId.shift(),
+					parentId: row.SittingReceiverId.shift(),
 					startedAt: Date.parse(row.StartedAtUtc.shift()['a:DateTime'].shift())
 				};
 			}).valueOf();

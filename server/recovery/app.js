@@ -4,7 +4,7 @@ var _ = require('lodash');
 var async = require('async');
 var VError = require('verror');
 var level = require('level');
-var config = require('../config');
+var config = require('../common/config');
 var readTransactions = require('./readTransactions');
 var generateStats = require('./generateStats');
 var domain = require('domain');
@@ -22,8 +22,13 @@ var db = sublevel(level(config.dbPath, {
 	errorIfExists: false,
 	valueEncoding: 'json'
 }));
-var transactionsLevel = db.sublevel(config.subLevels.transactions);
-var statsLevel = db.sublevel(config.subLevels.stats);
+
+// setup sublevels
+var sublevels = {};
+_(config.subLevels).each(function(sublevelName) {
+	sublevels[sublevelName] = db.sublevel(sublevelName);
+});
+
 
 function run() {
 	var transactions = [];
@@ -43,15 +48,14 @@ function run() {
 		},
 		function (sCb) {
 			console.log("Inserting transactions into db.");
-			transactionsLevel.batch(_.map(transactions, function (o) {
+			sublevels.transactions.batch(_.map(transactions, function (o) {
 				return {type: 'put', key: o._id, value: o};
 			}), sCb);
 		},
 		function (sCb) {
 			console.log("Verifying inserted transactions.");
 			verifyData({
-				sub: transactionsLevel,
-				keyPrefix: '!transaction',
+				sub: sublevels.transactions,
 				amtExpected: transactions.length
 			}, sCb);
 		},
@@ -62,22 +66,52 @@ function run() {
 			}, function (err, res) {
 				if (err) err = new VError(err);
 				stats = res;
-				console.log("Stats for (%d) sitters generated.", stats.length);
+				console.log("Stats generated.");
 				sCb(err);
 			});
 		},
 		function (sCb) {
-			console.log("Inserting stats into db.");
-			statsLevel.batch(_.map(stats, function (o) {
-				return {type: 'put', key: o._id, value: o};
+			console.log("Inserting member stats into db.");
+			sublevels.members.batch(_.map(stats.members, function (o) {
+				return {type: 'put', key: o.memberId, value: o};
 			}), sCb);
 		},
+
 		function (sCb) {
 			console.log("Verifying inserted stats.");
 			verifyData({
-				sub: statsLevel,
-				keyPrefix: '!stat',
-				amtExpected: stats.length
+				sub: sublevels.members,
+				amtExpected: stats.members.length
+			}, sCb);
+		},
+
+		function (sCb) {
+			console.log("Inserting productive members into db.");
+			sublevels.productiveMembers.batch(_.map(stats.productiveMembers, function (o) {
+				return {type: 'put', key: o.memberId, value: o};
+			}), sCb);
+		},
+
+		function (sCb) {
+			console.log("Verifying inserted productive members.");
+			verifyData({
+				sub: sublevels.productiveMembers,
+				amtExpected: stats.productiveMembers.length
+			}, sCb);
+		},
+
+		function (sCb) {
+			console.log("Inserting sitter recommendations into db.");
+			sublevels.recommendedSitters.batch(_.map(stats.recommendedSitters, function (o) {
+				return {type: 'put', key: o.memberId, value: o};
+			}), sCb);
+		},
+
+		function (sCb) {
+			console.log("Verifying inserted sitter recommendations.");
+			verifyData({
+				sub: sublevels.recommendedSitters,
+				amtExpected: stats.recommendedSitters.length
 			}, sCb);
 		}
 	], function (err) {
@@ -92,11 +126,10 @@ function run() {
 
 function verifyData(params, cb) {
 	var sub = params.sub;
-	var keyPrefix = params.keyPrefix;
 	var amtExpected = params.amtExpected;
 	var amtFound = 0;
 
-	sub.createReadStream({gt: keyPrefix, keys: true, values: false})
+	sub.createKeyStream()
 		.on('data', function (data) {
 			amtFound++;
 		})
@@ -106,7 +139,7 @@ function verifyData(params, cb) {
 				console.log("Verified, (%d) records found, (%d) expected.", amtFound, amtExpected);
 				return cb();
 			}
-			return cb(new VError("Expected (" + amtExpected + ") " + keyPrefix + " items to be stored, but only retrieved ("
+			return cb(new VError("Expected (" + amtExpected + ") items to be stored, but only retrieved ("
 			+ amtFound + ")"));
 		});
 }

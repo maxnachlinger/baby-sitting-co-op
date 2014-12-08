@@ -5,9 +5,9 @@ var Hapi = require('hapi');
 var Good = require('good');
 var Joi = require('joi');
 
-var config = require('../config');
+var config = require('./common/config');
 
-var server = new Hapi.Server('0.0.0.0', process.env.port || 8080, {
+var server = new Hapi.Server('0.0.0.0', process.env.port || config.serverPort, {
 	cors: true,
 	validation: {
 		abortEarly: false,
@@ -17,21 +17,8 @@ var server = new Hapi.Server('0.0.0.0', process.env.port || 8080, {
 
 server.route({
 	method: 'GET',
-	path: '/{static*}',
-	handler: {
-		directory: {
-			path: path.join(__dirname, '/public'),
-			lookupCompressed: true,
-			listing: false,
-			index: true
-		}
-	}
-});
-
-server.route({
-	method: 'GET',
-	path: '/stat',
-	handler: require('./handlers/stats')
+	path: '/member',
+	handler: require('./handlers/members')
 });
 
 server.pack.register({

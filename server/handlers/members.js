@@ -4,7 +4,7 @@ var VError = require('verror');
 var _ = require('lodash');
 var async = require('async');
 var multilevel = require('multilevel');
-var config = require('../../config');
+var config = require('../common/config');
 var manifest = require('../manifest.json');
 var JSONStream = require('JSONStream');
 
@@ -14,8 +14,8 @@ module.exports = function (request, reply) {
 	dbSocket.pipe(db.createRpcStream()).pipe(dbSocket);
 
 	reply(
-		db.sublevels[config.subLevels.stats]
-			.createValueStream({gt: '!stat'})
+		db.sublevels[config.subLevels.members]
+			.createValueStream()
 			.pipe(JSONStream.stringify())
 	).type('application/json');
 };

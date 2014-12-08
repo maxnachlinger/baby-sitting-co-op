@@ -1,0 +1,13 @@
+var path = require('path');
+
+module.exports = {
+	dbPath: path.resolve(__dirname + '/../db.level'),
+	subLevels: {
+		transactions: 'transactions',
+		members: 'members',
+		productiveMembers: 'productiveMembers',
+		recommendedSitters: 'recommendedSitters'
+	},
+	levelPort: 3000,
+	serverPort: 8080
+};
