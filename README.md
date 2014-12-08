@@ -18,7 +18,7 @@ npm start
 [Details about member 0: /member/0](http://localhost:8080/member/0)
 
 [Recommended sitters for member 0: member/0/recommendedSitters](http://localhost:8080/member/0/recommendedSitters)
-(or any other facet of a member, try member/0/points as well)
+(or any other facet of a member, try [member/0/points](http://localhost:8080/member/0/points) as well)
 
 [All member-ids and their co-op points: /member/points](http://localhost:8080/member/points)
 
