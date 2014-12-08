@@ -61,7 +61,8 @@ _plugin.register = function (server, options, next) {
 		});
 
 		server.events.on('response', function (request) {
-			request.closeLevelConnection();
+			if(request.closeLevelConnection)
+				request.closeLevelConnection();
 		});
 
 		next();
