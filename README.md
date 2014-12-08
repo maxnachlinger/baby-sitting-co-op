@@ -6,7 +6,10 @@ clone this repo
 cd baby-sitting-co-op
 npm i
 npm test
-npm start
+# builds db from transactions.xml
+npm run recover
+# starts up REST API on port 8080
+npm start 
 ```
 ### REST API end-points:
 
