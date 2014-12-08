@@ -5,6 +5,7 @@
 	"main": "app.js",
 	"scripts": {
 		"test": "tape ./tests/recovery/*.js",
+		"recover": "node recovery/app.js",
 		"start": "node app.js"
 	},
 	"author": "Max Nachlinger <max@somewhere.com>",

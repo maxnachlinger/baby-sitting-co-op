@@ -29,11 +29,11 @@ function run() {
 	var transactions = [];
 	var stats = [];
 
-	console.log("Reading transactions file");
+	console.log("Starting transaction file recovery");
 	async.series([
 		function (sCb) {
 			readTransactions({
-				transactionsPath: path.resolve('./transactions.xml')
+				transactionsPath: path.resolve(__dirname + '/transactions.xml')
 			}, function (err, res) {
 				if (err) err = new VError(err);
 				transactions = res;

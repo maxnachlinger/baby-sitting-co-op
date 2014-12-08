@@ -11,8 +11,8 @@ var _plugin = {
 };
 
 _plugin.defaults = {
-	manifestPath: path.resolve('../manifest.json'),
-	dbPath: path.resolve('../../db.level'),
+	manifestPath: path.resolve(__dirname + '/../manifest.json'),
+	dbPath: path.resolve(__dirname + '/../../db.level'),
 	levelOptions: {
 		createIfMissing: true,
 		errorIfExists: false,

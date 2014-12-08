@@ -69,8 +69,8 @@ server.pack.register([{
 }, {
 	plugin: require('./plugins/levelConnectionPlugin'),
 	options: {
-		manifestPath: path.resolve('./manifest.json'),
-		dbPath: path.resolve('./db.level'),
+		manifestPath: path.resolve(__dirname + '/manifest.json'),
+		dbPath: path.resolve(__dirname + '/db.level'),
 		levelOptions: config.levelOptions,
 		subLevels: _.values(config.subLevels),
 		levelPort: config.levelPort
