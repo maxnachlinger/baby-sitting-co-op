@@ -19,7 +19,6 @@ test('Errors on bad input.', function (t) {
 });
 
 test('Calculates the total amount of points for each baby sitter.', function (t) {
-	// ids 0 and 1 start with 5 points
 	var transactions = [
 		{
 			_id: 0,

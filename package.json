@@ -4,7 +4,8 @@
 	"description": "Service code for a simple baby-sitting co-op app",
 	"main": "app.js",
 	"scripts": {
-		"test": "tape ./tests/*.js"
+		"test": "tape ./tests/recovery/*.js",
+		"start": "node app.js"
 	},
 	"author": "Max Nachlinger <max@somewhere.com>",
 	"license": "ISC",
