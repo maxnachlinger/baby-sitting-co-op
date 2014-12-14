@@ -1,4 +1,5 @@
 #baby-sitting-co-op
+A small app for a job-interview.
 
 ### Installation
 ```
